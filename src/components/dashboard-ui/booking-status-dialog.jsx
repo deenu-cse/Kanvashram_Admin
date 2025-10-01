@@ -10,7 +10,7 @@ import { Edit } from "lucide-react"
 
 export function BookingStatusDialog({ booking, onUpdate }) {
   const [open, setOpen] = useState(false)
-  const [status, setStatus] = useState<Booking["status"]>(booking.status)
+  const [status, setStatus] = useState(booking.status)
 
   const handleSubmit = () => {
     onUpdate(booking.id, status)
