@@ -37,7 +37,7 @@ export function RoomCard({ room, onEdit, onDelete }) {
           <img 
             src={room.images[0] || "/placeholder.svg"} 
             alt={room.name} 
-            className="w-full h-full object-cover"
+            className="w-full h-full max-h-56 object-cover"
             onError={(e) => {
               e.target.src = "/placeholder.svg"
             }}

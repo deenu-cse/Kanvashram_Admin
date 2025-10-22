@@ -21,7 +21,6 @@ const AMENITIES = [
   "Balcony",
   "Garden View",
   "River View",
-
   "Yoga Mat",
   "Meditation Cushion",
   "Prayer Hall Access",
@@ -30,14 +29,12 @@ const AMENITIES = [
   "Herbal Tea",
   "Library with Spiritual Books",
   "Silence Zone",
-
   "Vegetarian Meals",
   "Organic Food Options",
   "Ayurvedic Kitchen",
   "Filtered Drinking Water",
   "Laundry Service",
   "Room Service",
-
   "Daily Satsang / Bhajan",
   "Kirtan Hall",
   "Guru Darshan / Temple Access",
@@ -46,7 +43,6 @@ const AMENITIES = [
   "Gardening Area",
   "Walking Paths",
   "Morning & Evening Aarti",
-
   "Open Courtyard",
   "Traditional Floor Seating",
   "Outdoor Meditation Spaces",
@@ -54,14 +50,13 @@ const AMENITIES = [
   "Healing/Detox Programs"
 ];
 
-
 export function RoomFormDialog({ room, onSave, trigger, onOpenChange }) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    images: [],
+    images: [], // This will now store File objects
     price: 0,
     discount: 0,
     beds: 1,
@@ -75,7 +70,7 @@ export function RoomFormDialog({ room, onSave, trigger, onOpenChange }) {
       setFormData({
         name: room.name || "",
         description: room.description || "",
-        images: room.images || [],
+        images: room.images || [], // For editing, this will be existing image URLs
         price: room.price || 0,
         discount: room.discount || 0,
         beds: room.beds || 1,
@@ -98,21 +93,49 @@ export function RoomFormDialog({ room, onSave, trigger, onOpenChange }) {
     }
   }, [room, open])
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+  // In your RoomFormDialog handleSubmit function:
+const handleSubmit = async (e) => {
+  e.preventDefault()
+  setLoading(true)
 
-    try {
-      await onSave(formData)
-      setOpen(false)
-      if (onOpenChange) {
-        onOpenChange(false)
-      }
-    } catch (error) {
-    } finally {
-      setLoading(false)
+  try {
+    // Create FormData object
+    const formDataToSend = new FormData()
+    
+    // Append all form fields
+    formDataToSend.append('name', formData.name)
+    formDataToSend.append('description', formData.description)
+    formDataToSend.append('price', formData.price.toString())
+    formDataToSend.append('discount', formData.discount.toString())
+    formDataToSend.append('beds', formData.beds.toString())
+    formDataToSend.append('maxGuests', formData.maxGuests.toString())
+    formDataToSend.append('status', formData.status)
+
+    // Append amenities as individual fields
+    formData.amenities.forEach((amenity) => {
+      formDataToSend.append('amenities', amenity)
+    })
+
+    // Append image files
+    if (formData.images && formData.images.length > 0) {
+      formData.images.forEach((image, index) => {
+        if (image instanceof File) {
+          formDataToSend.append('images', image)
+        }
+      })
     }
+
+    await onSave(formDataToSend)
+    setOpen(false)
+    if (onOpenChange) {
+      onOpenChange(false)
+    }
+  } catch (error) {
+    console.error('Error saving room:', error)
+  } finally {
+    setLoading(false)
   }
+}
 
   const toggleAmenity = (amenity) => {
     setFormData((prev) => ({

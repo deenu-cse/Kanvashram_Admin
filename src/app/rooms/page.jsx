@@ -99,9 +99,15 @@ export default function RoomsPage() {
     setFilteredRooms(filtered)
   }
 
-  const createRoom = async (roomData) => {
+  // In your RoomsPage component, update the createRoom and updateRoom functions:
+
+  const createRoom = async (formData) => {
     try {
-      const response = await api.post('/rooms', roomData)
+      const response = await api.post('/rooms', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       toast.success("Room created successfully")
       loadRooms()
       loadStats()
@@ -113,9 +119,13 @@ export default function RoomsPage() {
     }
   }
 
-  const updateRoom = async (id, roomData) => {
+  const updateRoom = async (id, formData) => {
     try {
-      const response = await api.put(`/rooms/${id}`, roomData)
+      const response = await api.put(`/rooms/${id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       toast.success("Room updated successfully")
       loadRooms()
       loadStats()

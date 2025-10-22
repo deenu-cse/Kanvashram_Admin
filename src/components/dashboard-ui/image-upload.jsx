@@ -1,37 +1,48 @@
 "use client"
 
 import React from "react"
-
 import { useState } from "react"
 import { X, Upload } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-
 export function ImageUpload({ images, onChange, maxImages = 5 }) {
   const [previews, setPreviews] = useState(images)
+  const [files, setFiles] = useState([])
 
   const handleFileChange = (e) => {
-    const files = Array.from(e.target.files || [])
-    if (files.length + previews.length > maxImages) {
+    const newFiles = Array.from(e.target.files || [])
+    if (newFiles.length + files.length > maxImages) {
       alert(`Maximum ${maxImages} images allowed`)
       return
     }
 
-    files.forEach((file) => {
+    const updatedFiles = [...files, ...newFiles]
+    setFiles(updatedFiles)
+
+    // Create previews
+    const newPreviews = []
+    newFiles.forEach((file) => {
       const reader = new FileReader()
       reader.onloadend = () => {
-        const newPreviews = [...previews, reader.result]
-        setPreviews(newPreviews)
-        onChange(newPreviews)
+        newPreviews.push(reader.result)
+        if (newPreviews.length === newFiles.length) {
+          const allPreviews = [...previews, ...newPreviews]
+          setPreviews(allPreviews)
+          // Send files to parent component
+          onChange(updatedFiles)
+        }
       }
       reader.readAsDataURL(file)
     })
   }
 
   const removeImage = (index) => {
+    const newFiles = files.filter((_, i) => i !== index)
     const newPreviews = previews.filter((_, i) => i !== index)
+    
+    setFiles(newFiles)
     setPreviews(newPreviews)
-    onChange(newPreviews)
+    onChange(newFiles)
   }
 
   return (
@@ -64,7 +75,13 @@ export function ImageUpload({ images, onChange, maxImages = 5 }) {
           >
             <Upload className="h-8 w-8 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">Upload Image</span>
-            <input type="file" accept="image/*" multiple onChange={handleFileChange} className="hidden" />
+            <input 
+              type="file" 
+              accept="image/*" 
+              multiple 
+              onChange={handleFileChange} 
+              className="hidden" 
+            />
           </label>
         )}
       </div>

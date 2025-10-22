@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Bed, Calendar, Users, Menu } from "lucide-react"
+import { LayoutDashboard, Bed, Calendar, Users, Menu, Leaf } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
@@ -22,6 +22,11 @@ const navItems = [
     title: "Bookings",
     href: "/bookings",
     icon: Calendar,
+  },
+  {
+    title: "Donations",
+    href: "/donations",
+    icon: Leaf,
   },
   {
     title: "Admins",
